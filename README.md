@@ -1,6 +1,6 @@
 # 🌐 External Global Counter
 
-Google Apps Script（GAS）と GitHub Gist を組み合わせた、**完全無料・サーバーレス**で動作する汎用カウンターAPIです。
+Google Apps Script（GAS）と GitHub Gist を組み合わせた、無料で使える汎用カウンターAPIです。
 
 URLにアクセスするだけでカウントできるため、Unity / VRChat / Web など幅広い環境で利用可能です。
 
