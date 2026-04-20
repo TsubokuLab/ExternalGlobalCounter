@@ -119,8 +119,8 @@ function runSetup(token, projectName) {
     .replace(/[^a-zA-Z0-9_\-]/g, '_');
   const fileName     = cleanProject + '.json';
 
-  // 1. デプロイURL取得（Gist descriptionに含める）
-  const scriptUrl = ScriptApp.getService().getUrl();
+  // 1. GASエディタURL取得（Gist descriptionに含める）
+  const scriptUrl = 'https://script.google.com/home/projects/' + ScriptApp.getScriptId() + '/edit';
 
   // 2. Tokenの有効性チェック
   const authCheck = UrlFetchApp.fetch('https://api.github.com/user', {
