@@ -119,7 +119,10 @@ function runSetup(token, projectName) {
     .replace(/[^a-zA-Z0-9_\-]/g, '_');
   const fileName     = cleanProject + '.json';
 
-  // 1. Tokenの有効性チェック
+  // 1. デプロイURL取得（Gist descriptionに含める）
+  const scriptUrl = ScriptApp.getService().getUrl();
+
+  // 2. Tokenの有効性チェック
   const authCheck = UrlFetchApp.fetch('https://api.github.com/user', {
     headers: {
       'Authorization': 'token ' + cleanToken,
@@ -134,9 +137,9 @@ function runSetup(token, projectName) {
 
   const githubUser = JSON.parse(authCheck.getContentText()).login;
 
-  // 2. Gist新規作成
+  // 3. Gist新規作成
   const gistPayload = {
-    description: 'External Global Counter — ' + cleanProject,
+    description: 'External Global Counter — ' + cleanProject + ' | ' + scriptUrl,
     public: false,
     files: {}
   };
@@ -165,7 +168,7 @@ function runSetup(token, projectName) {
   const rawUrl  = 'https://gist.githubusercontent.com/'
     + githubUser + '/' + gistId + '/raw/' + fileName;
 
-  // 3. PropertiesServiceに保存
+  // 4. PropertiesServiceに保存
   PropertiesService.getScriptProperties().setProperties({
     'GITHUB_TOKEN':  cleanToken,
     'GIST_ID':       gistId,
@@ -176,16 +179,13 @@ function runSetup(token, projectName) {
     'RAW_URL':       rawUrl
   });
 
-  // 4. 5分トリガー登録
+  // 5. 5分トリガー登録
   ScriptApp.getProjectTriggers().forEach(t => {
     if (t.getHandlerFunction() === 'flushToGist') {
       ScriptApp.deleteTrigger(t);
     }
   });
   ScriptApp.newTrigger('flushToGist').timeBased().everyMinutes(5).create();
-
-  // デプロイURLを取得してapiUrlとして返す
-  const scriptUrl = ScriptApp.getService().getUrl();
 
   return {
     projectName: cleanProject,
