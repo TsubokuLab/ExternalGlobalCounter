@@ -8,26 +8,28 @@ URLにアクセスするだけでカウントできるため、Unity / VRChat / 
 
 ## 特徴
 
-- **完全無料** — GAS無料枠 + GitHub Gist無料枠で運営
-- **GETリクエストのみ** — POSTやCORSの設定不要
-- **複数キー同時カウント** — カンマ区切りで一度に複数のイベントを記録
-- **高速・低負荷** — CacheServiceへの書き込みのみで即レスポンス。Gistへの書き込みは5分毎のバッチ処理
-- **セットアップUI内蔵** — フォームに入力するだけで設定完了
+| | |
+|---|---|
+| 💰 **完全無料** | GAS + GitHub Gist の無料枠のみで動作 |
+| 🔗 **GETだけで使える** | POST不要・CORS設定不要 |
+| 🎯 **複数キーを同時送信** | `?keys=play,clear` のようにカンマ区切りで一括カウント |
+| ⚡ **高速レスポンス** | カウントはメモリ書き込みのみ。Gistへの反映は5分毎のバッチ処理 |
+| 🛠️ **セットアップUI内蔵** | フォームにTokenとプロジェクト名を入力するだけで設定完了 |
 
 ---
 
-## システム構成
+## 仕組みの解説
+
+カウントの受付とGistへの保存を分離することで、高速レスポンスと安定性を両立しています。
 
 ```
-[クライアント（ゲーム/Web）]
-    ↓ GET ?keys=stage1_play,stage1_clear
-[GAS Webアプリ（doGet）]
-    ↓ CacheService に +1（高速・スプレッドシート不使用）
-[CacheService（インメモリKVS）]
-    ↓ 5分毎トリガー（flushToGist）
-[GitHub Gist（counter.json）]
-    ↑ Raw URL で直接取得
-[ゲーム内表示・集計]
+[クライアント]  GET ?keys=stage1_play
+     ↓
+[GAS Webアプリ]  CacheService（メモリ）に +1 して即レスポンス
+     ↓ 5分毎のトリガー
+[GitHub Gist]   カウントデータをJSONで永続保存
+     ↑
+[クライアント]  Raw URLから集計JSONを直接取得
 ```
 
 ---
@@ -116,6 +118,7 @@ GET https://gist.githubusercontent.com/{user}/{gist_id}/raw/{filename}.json
 
 - キーは動的に追加されます（事前定義不要）
 - `last_updated` は5分毎に自動更新されます
+- **キーの修正・削除はGistページの「Edit」から直接JSONを編集してください**
 
 ---
 
@@ -179,13 +182,16 @@ IEnumerator FetchStats(string rawUrl) {
 
 ## 制限事項
 
+GAS 無料アカウント（@gmail.com）の主な制限です。（[公式ドキュメント](https://developers.google.com/apps-script/guides/services/quotas)）
+
 | 項目 | 制限 |
 |------|------|
-| GAS リクエスト数 | 20,000回/日（URLFetch） |
-| GAS トリガー実行時間 | 累計90分/日 |
+| Webアプリ同時実行数 | 30件／ユーザー |
+| 1日の合計実行時間 | 90分 |
+| 1回あたりの実行時間 | 最大6分 |
+| URLFetchApp | 20,000リクエスト／日 |
 | CacheService TTL | 最大6時間（5分トリガーが停止すると未反映データが消失） |
-| GitHub API | 5,000リクエスト/時（認証済み） |
-| 同時書き込み競合 | LockService 5秒でタイムアウト → `Server busy` エラー |
+| GitHub API | 5,000リクエスト／時（認証済み） |
 
 ---
 
