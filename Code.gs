@@ -119,8 +119,9 @@ function runSetup(token, projectName) {
     .replace(/[^a-zA-Z0-9_\-]/g, '_');
   const fileName     = cleanProject + '.json';
 
-  // 1. GASエディタURL取得（Gist descriptionに含める）
-  const scriptUrl = 'https://script.google.com/home/projects/' + ScriptApp.getScriptId() + '/edit';
+  // 1. URL取得（エディタURL→Gist description用、APIのURL→完了画面のサンプルURL用）
+  const editorUrl = 'https://script.google.com/home/projects/' + ScriptApp.getScriptId() + '/edit';
+  const apiUrl    = ScriptApp.getService().getUrl();
 
   // 2. Tokenの有効性チェック
   const authCheck = UrlFetchApp.fetch('https://api.github.com/user', {
@@ -139,7 +140,7 @@ function runSetup(token, projectName) {
 
   // 3. Gist新規作成
   const gistPayload = {
-    description: 'External Global Counter — ' + cleanProject + ' | ' + scriptUrl,
+    description: 'External Global Counter — ' + cleanProject + ' | ' + editorUrl,
     public: false,
     files: {}
   };
@@ -193,7 +194,7 @@ function runSetup(token, projectName) {
     gistId:      gistId,
     gistUrl:     gistUrl,
     rawUrl:      rawUrl,
-    apiUrl:      scriptUrl
+    apiUrl:      apiUrl
   };
 }
 
