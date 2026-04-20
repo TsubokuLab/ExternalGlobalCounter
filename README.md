@@ -1,0 +1,2 @@
+# ExternalGlobalCounter
+Gistと連携してそこそこの負荷に耐えうる汎用的なカウンターAPIを作る為のGoogle Apps Script
