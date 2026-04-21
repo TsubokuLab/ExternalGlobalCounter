@@ -40,8 +40,10 @@ URLにアクセスするだけでカウントできるため、Unity / VRChat / 
 
 1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens**
 2. **「Generate new token」** をクリック
-3. **Permissions → Gists → Read and write** を選択してトークンを生成
-4. 表示されたトークンをコピー（このページを閉じると再表示されません）
+3. **Expiration** → **No expiration** を選択
+4. **Repository access** → **All repositories** を選択
+5. **Permissions → Account permissions → Gists → Read and write** を選択してトークンを生成
+6. 表示されたトークンをコピー（このページを閉じると再表示されません）
 
 ### 2. GASプロジェクトを作成してデプロイ
 
